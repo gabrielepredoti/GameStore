@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+//daje
+
 /*
 Appartiene a un Ordine già confermato.
 È storico e immutabile, cioè fotografa cosa è stato acquistato in quel momento, a quel prezzo e in quella quantità.

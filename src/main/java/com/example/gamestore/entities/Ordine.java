@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -27,7 +27,7 @@ public class Ordine {
     @Basic
     @CreationTimestamp
     @Column(name = "data_ordine", nullable = false)
-    private LocalDateTime dataOrdine;
+    private Date dataOrdine;
 
     @Basic
     @Column(name = "totale")
@@ -39,5 +39,7 @@ public class Ordine {
 
     @OneToMany(mappedBy = "ordine", cascade = CascadeType.MERGE)
     List<DettaglioOrdine> listaDettagliOrdine;
+
+
 
 }

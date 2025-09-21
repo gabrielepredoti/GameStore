@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -79,6 +78,16 @@ public class Videogioco {
     @JsonIgnore
     @ToString.Exclude
     private List<DettaglioOrdine> listaDettagliOrdine;
+
+    /*
+    Per gestire prodotti che non mostriamo agli utenti (ad esempio titoli ritirati o non più
+    disponibili), senza doverli eliminare dal DB.
+    0 = visibile agli utenti
+    1 = nascosto (non appare nelle ricerche, ma resta nel DB per eventuale riattivazione
+     */
+    @Basic
+    @Column(name = "nascosto", length = 1)
+    private int nascosto;
 
 
 

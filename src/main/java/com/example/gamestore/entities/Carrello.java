@@ -13,7 +13,10 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "carrello")
+@Table(name = "carrello", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"id_utente", "attivo"})
+        //Un utente ha al massimo un carrello attivo
+})
 public class Carrello {
 
     @Id
@@ -28,6 +31,9 @@ public class Carrello {
     @OneToMany(mappedBy = "carrello", cascade = CascadeType.MERGE)
     private List<DettaglioCarrello> listaDettagliCarrello;
 
+    @Basic
+    @Column(name = "attivo", length = 1)
+    private int attivo;
 
 
 }

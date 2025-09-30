@@ -34,13 +34,13 @@ public class Utente {
     @Column(name = "email", unique = true, length = 90)
     private String email;
 
-    @Basic
-    @Column(name = "numero_di_telefono",  length = 20)
-    private String numeroTelefono;
+//    @Basic
+//    @Column(name = "numero_di_telefono",  length = 20)
+//    private String numeroTelefono;
 
-    @Basic
-    @Column(name = "indirizzo",  length = 150)
-    private String indirizzo;
+//    @Basic
+//    @Column(name = "indirizzo",  length = 150)
+//    private String indirizzo;
 
 
     @OneToOne(mappedBy = "utente",cascade = CascadeType.MERGE)

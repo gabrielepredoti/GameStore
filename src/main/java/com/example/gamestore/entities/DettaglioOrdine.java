@@ -35,7 +35,7 @@ public class DettaglioOrdine {
 
     @Basic
     @Column(name = "prezzo_unitario")
-    private float prezzoUnitario;
+    private Double prezzoUnitario;
 
     @ManyToOne
     @JoinColumn(name = "id_ordine")

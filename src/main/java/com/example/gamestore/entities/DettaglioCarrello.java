@@ -40,7 +40,7 @@ public class DettaglioCarrello {
 
     @Basic
     @Column(name = "prezzo_unitario")
-    private float prezzoUnitario;
+    private Double prezzoUnitario;
 
 
 }

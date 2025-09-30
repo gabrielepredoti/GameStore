@@ -31,7 +31,7 @@ public class Ordine {
 
     @Basic
     @Column(name = "totale")
-    private float totale;
+    private Double totale;
 
     @ManyToOne
     @JoinColumn(name = "id_utente")

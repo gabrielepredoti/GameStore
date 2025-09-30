@@ -62,7 +62,7 @@ public class Videogioco {
 
     @Basic
     @Column(name = "prezzo")
-    private float prezzo;
+    private Double prezzo;
 
     @Basic
     @Column(name = "quantita", nullable = false)
@@ -80,10 +80,10 @@ public class Videogioco {
     private List<DettaglioOrdine> listaDettagliOrdine;
 
     /*
-    Per gestire prodotti che non mostriamo agli utenti (ad esempio titoli ritirati o non più
+    attributo per gestire prodotti che non mostriamo agli utenti (ad esempio titoli ritirati o non più
     disponibili), senza doverli eliminare dal DB.
     0 = visibile agli utenti
-    1 = nascosto (non appare nelle ricerche, ma resta nel DB per eventuale riattivazione
+    1 = nascosto (non appare nelle ricerche, ma resta nel DB per eventuale riattivazione)
      */
     @Basic
     @Column(name = "nascosto", length = 1)

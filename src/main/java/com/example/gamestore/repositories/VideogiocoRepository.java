@@ -15,6 +15,8 @@ public interface VideogiocoRepository extends JpaRepository<Videogioco, Integer>
     // Cerca i videogiochi per nome (e se visibili), non Page perchè non ci sono tantissimi giochi con lo stesso identico nome
     List<Videogioco> findByNomeIgnoreCaseAndNascosto(String nome, int nascosto);
 
+
+
     // Cerca giochi per piattaforma con paginazione (PS5, Xbox, PC, ecc...)
     Page<Videogioco> findByPiattaformaContainingIgnoreCaseAndNascosto(String piattaforma, Pageable paging, int nascosto);
 
@@ -39,7 +41,11 @@ public interface VideogiocoRepository extends JpaRepository<Videogioco, Integer>
            "       (v.piattaforma LIKE ?4 OR ?4 IS NULL) AND"+
            "       (v.quantita >= ?5 OR ?5 IS NULL) AND v.nascosto = 0"
     )
-    List<Videogioco> ricercaApprofondita(float prezzoMin, float prezzoMax, String nome, String piattaforma, int quantita);
+    List<Videogioco> ricercaApprofondita(double prezzoMin, double prezzoMax, String nome, String piattaforma, int quantita);
 
+
+    Page<Videogioco> findByQuantitaGreaterThanAndNascosto(Pageable paging, int quantita, int nascosto);
+
+    boolean existsByNomeIgnoreCaseAndNascosto(String nome,int nascosto);
 
 }

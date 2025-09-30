@@ -16,3 +16,32 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/gamestore/protocol/openid-connect/certs
+          issuer-uri: http://localhost:8080/realms/gamestore
+
+jwt:
+  auth:
+    converter:
+      principle-attribute: preferred_username   # Username preso dal token
+      resource-id: gamestore-client             # Deve coincidere col "Client ID" in Keycloak
+
+keycloak:
+  server-url: http://localhost:8080
+  realm: gamestore
+  admin:
+    username: admin
+    password: admin
+    client-id: admin-cli
+  client:
+    id: gamestore-client
+  credentials:
+    secret: PGdOrAiOqfiMTlEwFOcUEBkkOnmUl0hP
+
+
+server:
+  port: 8081

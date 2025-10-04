@@ -1,5 +1,6 @@
 package com.example.gamestore.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,7 @@ public class DettaglioCarrello {
     @ManyToOne
     @JoinColumn(name = "id_carrello")
     @ToString.Exclude
+    @JsonIgnore
     private Carrello carrello;
 
     @ManyToOne(cascade = CascadeType.MERGE)

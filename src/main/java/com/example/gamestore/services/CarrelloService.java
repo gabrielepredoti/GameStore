@@ -156,7 +156,7 @@ public class CarrelloService {
 
         Utente utente = u.get();
 
-        //Prendo carrello nel DB per verificare se i videogiochi che ho nei due carrelli (lato FE e lato be) sono uguali o meno, altrimenti
+        //Prendo carrello nel DB per verificare se i videogiochi che ho nei due carrelli (lato FE e lato BE) sono uguali o meno, altrimenti
         //c'è il problema introdotto a lezione (moglie collana, marito canna da pesca)
 
         //Se il backend non controllasse che il carrello effettivo (BE) e quello ricevuto dal FE coincidono, rischieremmo che l’ordine

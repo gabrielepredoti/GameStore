@@ -24,6 +24,7 @@ spring:
           jwk-set-uri: http://localhost:8080/realms/gamestore/protocol/openid-connect/certs
           issuer-uri: http://localhost:8080/realms/gamestore
 
+
 jwt:
   auth:
     converter:
@@ -35,11 +36,11 @@ keycloak:
   realm: gamestore
   admin:
     username: admin
-    password: admin
-    client-id: admin-cli
+    password: admin123
+    client-id: gamestore-admin
+    secret: dJfbWn2f9LguTZu9kJtpRijUAQZV87ZU
   client:
     id: gamestore-client
-  credentials:
     secret: PGdOrAiOqfiMTlEwFOcUEBkkOnmUl0hP
 
 

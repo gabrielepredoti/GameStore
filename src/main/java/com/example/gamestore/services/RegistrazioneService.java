@@ -40,7 +40,7 @@ public class RegistrazioneService {
     private String keycloakUrl;
 
     @Value("${keycloak.realm}")
-    private String keycloakRealm;     // Nome del Realm in Keycloak (es: "gamestore")
+    private String keycloakRealm;     // Nome del Realm in Keycloak
 
     @Value("${keycloak.admin.username}")
     private String adminUsername;     // Username dell’admin Keycloak
@@ -49,11 +49,14 @@ public class RegistrazioneService {
     @Value("${keycloak.admin.client-id}")
     private String adminClientId;     // Client id usato dall’admin
 
-    @Value("${keycloak.credentials.secret}")
-    private String secret;            // Secret generato in Keycloak per il client gamestore-client
+    @Value("${keycloak.admin.secret}")
+    private String adminSecret;            // Secret generato in Keycloak per il client gamestore-client
 
     @Value("${keycloak.client.id}")
     private String clientId;          // Client ID pubblico
+
+    @Value("${keycloak.client.secret}")
+    private String clientSecret;
 
     // Costruttore con injection dei repository
     public RegistrazioneService(UtenteRepository utenteRepository, CarrelloRepository carrelloRepository) {
@@ -67,6 +70,7 @@ public class RegistrazioneService {
      * 2. Registra l'utente in Keycloak
      * 3. Se fallisce, viene fatto rollback della transazione DB
      */
+
     @Transactional(readOnly = false, rollbackFor = ErroreNellaRegistrazioneUtenteException.class)
     public ResponseEntity registraNuovoUtente(UtenteRegistrDto user) throws ErroreNellaRegistrazioneUtenteException {
 
@@ -95,11 +99,9 @@ public class RegistrazioneService {
         Keycloak keycloak = KeycloakBuilder.builder()
                 .serverUrl(keycloakUrl)        // URL server Keycloak
                 .realm(keycloakRealm)          // realm da usare
-                .username(adminUsername)       // admin username
-                .password(adminPassword)       // admin password
                 .clientId(adminClientId)       // admin client id
-                .clientSecret(secret)          // secret del client
-                .grantType(OAuth2Constants.PASSWORD) // tipo di grant usato
+                .clientSecret(adminSecret)          // secret del client
+                .grantType(OAuth2Constants.CLIENT_CREDENTIALS) // tipo di grant usato
                 .build();
 
         // Creo rappresentazione dell’utente da salvare in Keycloak
@@ -128,11 +130,16 @@ public class RegistrazioneService {
         // L’attributo "origin" è un esempio di metadato extra che può essere usato per tracciare
         // la provenienza o altre info personalizzate dell’utente.
 
+        /*
         Integer idToSave = utente_salvato.getId();
         Map<String, List<String>> attributes = new HashMap<>();
         attributes.put("idUtente", Collections.singletonList(idToSave.toString())); // salvo id DB come attributo
         attributes.put("origin", Arrays.asList("demo")); // attributo extra "origin"
         userk.setAttributes(attributes);
+        */
+
+        userk.singleAttribute("idUtente", String.valueOf(utente_salvato.getId()));
+        userk.singleAttribute("origin", "demo");
 
         // Mi collego alle API REST del realm Keycloak
         RealmResource realmResource = keycloak.realm(keycloakRealm);
@@ -140,6 +147,7 @@ public class RegistrazioneService {
 
         // Creo utente su Keycloak
         Response response = usersRessource.create(userk);
+
 
         // Se utente creato con successo (HTTP 201 CREATED)
         if (response.getStatus() == Response.Status.CREATED.getStatusCode()) {
@@ -159,9 +167,16 @@ public class RegistrazioneService {
             return new ResponseEntity(utente_salvato, HttpStatus.OK);
         } else {
             // Se fallisce la creazione su Keycloak, lancio eccezione → rollback DB
+            // LEGGI L'ERRORE DA KEYCLOAK
+            String errorBody = response.readEntity(String.class);
+            System.err.println("Errore Keycloak - Status: " + response.getStatus());
+            System.err.println("Messaggio errore: " + errorBody);
             throw new ErroreNellaRegistrazioneUtenteException();
         }
     }
+
+
+
 
     // Metodo per logout (invalida refresh token su Keycloak)
     public ResponseEntity logoutUser(String refreshToken) throws ErroreLogoutException {
@@ -170,7 +185,7 @@ public class RegistrazioneService {
                     .serverUrl(keycloakUrl)
                     .realm(keycloakRealm)
                     .clientId(clientId)
-                    .clientSecret(secret)
+                    .clientSecret(clientSecret)
                     .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
                     .build();
 
@@ -197,4 +212,33 @@ public class RegistrazioneService {
             throw new UtenteNonValidoONonEsistente();
         }
     }
+
+
+    /**
+     * Metodo per testare la connessione a Keycloak
+     */
+    public void testConnessioneKeycloak() {
+        try {
+            System.out.println("🧪 Test connessione Keycloak...");
+            System.out.println("   Server: " + keycloakUrl);
+            System.out.println("   Realm: " + keycloakRealm);
+            System.out.println("   Client: " + adminClientId);
+
+            Keycloak keycloak = KeycloakBuilder.builder()
+                    .serverUrl(keycloakUrl)
+                    .realm(keycloakRealm)
+                    .clientId(adminClientId)
+                    .clientSecret(adminSecret)
+                    .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+                    .build();
+
+            String token = keycloak.tokenManager().getAccessTokenString();
+            System.out.println("CONNESSIONE OK - Token ottenuto: " + token.substring(0, 50) + "...");
+
+        } catch (Exception e) {
+            System.err.println("CONNESSIONE FALLITA: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 }

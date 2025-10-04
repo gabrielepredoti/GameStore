@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VideogiocoRepository extends JpaRepository<Videogioco, Integer> {
@@ -29,6 +30,8 @@ public interface VideogiocoRepository extends JpaRepository<Videogioco, Integer>
     // Controlla se esiste già un videogioco con stesso nome e piattaforma (c'è GTA 6 per PS4? Darà false)
     boolean existsByNomeIgnoreCaseAndPiattaformaIgnoreCase(String nome, String piattaforma);
 
+
+
     /*
     Ricerca avanzata con filtri opzionali (prezzo min/max, nome, piattaforma, quantità disponibile).
     I videogiochi "nascosti" (nascosto=1) vengono esclusi dai risultati.
@@ -48,4 +51,6 @@ public interface VideogiocoRepository extends JpaRepository<Videogioco, Integer>
 
     boolean existsByNomeIgnoreCaseAndNascosto(String nome,int nascosto);
 
+    Optional<Videogioco> findByNomeIgnoreCaseAndPiattaformaIgnoreCase(String nome, String piattaforma); //per salvaVideogioco nel caso in cui ho nascosto videogioco e lo voglio riattivare
+                                                                                                        //verifica non violazione vincoli unique
 }

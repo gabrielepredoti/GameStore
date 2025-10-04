@@ -93,7 +93,7 @@ public class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthen
 
         // Converto i ruoli in authorities di Spring Security, prefissati con "ROLE_"
         return resourceRoles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toSet());
     }
 }

@@ -223,7 +223,7 @@ public class OrdineService {
                 videogioco.setQuantita(quantitaAggiornata);//reimposto quantita disponibile prodotto
                 videogioco.getListaDettagliOrdine().remove(dettaglioDaEliminare);
 
-                // Se nel carrello c'era già uno dei prodotti presente nell'ordine annullato
+                // Se nel carrello c'era già uno dei videogiochi presente nell'ordine annullato
                 // vado ad aumentare la quantità senza creare un nuovo DettaglioCarrello o violo i vincoli unique id_prodotto-id_carrello
                 if(dettaglioCarrelloRepository.existsByCarrello_IdAndVideogioco_Id(utente.getCarrello().getId(), videogioco.getId())){
                     DettaglioCarrello dettaglioCarrello = dettaglioCarrelloRepository.findByCarrello_IdAndVideogioco_Id(utente.getCarrello().getId(), videogioco.getId());

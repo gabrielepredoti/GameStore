@@ -49,7 +49,7 @@ public class VideogiocoService {
    }
 
    @Transactional(readOnly = true)
-    List<Videogioco> trovaVideogiocoByNome(String nomeVideogioco){
+    public List<Videogioco> trovaVideogiocoByNome(String nomeVideogioco){
 
        return videogiocoRepository.findByNomeIgnoreCaseAndNascosto(nomeVideogioco, 0);
 
@@ -73,6 +73,52 @@ public class VideogiocoService {
    @Transactional(readOnly = false, rollbackFor = {VideogiocoGiaEsistenteException.class, FasciaPrezzoNonValida.class, VideogiocoNonValidoException.class})
     public void salvaVideogioco(Videogioco videogioco) throws VideogiocoGiaEsistenteException, FasciaPrezzoNonValida, VideogiocoNonValidoException {
 
+
+       // 1. Cerca un videogioco esistente con lo stesso nome e piattaforma, Nascosto (1) o Visibile (0)
+       Optional<Videogioco> existingHidden = videogiocoRepository.findByNomeIgnoreCaseAndPiattaformaIgnoreCase(videogioco.getNome(), videogioco.getPiattaforma());
+
+       if (existingHidden.isPresent()) {
+           Videogioco daAggiornare = existingHidden.get();
+
+           // SCENARIO 1: Il gioco ESISTE ed è GIA VISIBILE (nascosto=0)
+           if (daAggiornare.getNascosto() == 0) {
+               throw new VideogiocoGiaEsistenteException(); // Errore: stai cercando di creare un duplicato attivo
+           }
+
+           // SCENARIO 2: Il gioco ESISTE ma è NASCOSTO (nascosto=1) -> RIATTIVA
+           // Copia i nuovi dettagli (prezzo, quantità, descrizione, etc.) nell'oggetto esistente
+           daAggiornare.setDescrizione(videogioco.getDescrizione());
+           daAggiornare.setPrezzo(videogioco.getPrezzo());
+           daAggiornare.setQuantita(videogioco.getQuantita());
+           daAggiornare.setAnnoRilascio(videogioco.getAnnoRilascio());
+           daAggiornare.setCasaProduttrice(videogioco.getCasaProduttrice());
+
+           daAggiornare.setNascosto(0); // Rendo visibile
+           videogiocoRepository.save(daAggiornare);
+           return; // Operazione completata
+       }
+
+
+       // 2. Se NON esiste, procedi con i controlli e la creazione di un NUOVO record
+       if(videogioco.getPrezzo() <= 0)
+           throw new FasciaPrezzoNonValida();
+
+       if(videogioco.getQuantita() <= 0)
+           throw new VideogiocoNonValidoException();
+
+       videogioco.setNascosto(0);
+       videogiocoRepository.save(videogioco);
+
+
+
+/*  VERSIONE SBAGLIATA:
+    Così non tengo conto del fatto che se rimuovo un videogioco (setNascosto a 1) per riattivarlo (setNascosto a 0) NON POSSO CREARE UN NUOVO VIDEOGIOCO CON STESSO NOME E STESSA PIATTAFORMA
+    CIò CONTRASTA I VINCOLI DI UNIQUE SU VIDEOGIOCO (nome,piattaforma)
+
+    //ESEMPIO: ho GTA 5 per PS4. Lo nascondo tramite rimuoviVideogioco. Bene, ora voglio renderlo visibile. Come faccio?
+    //         Richiamo salvaVideogioco con GTA 5 nel body e tutto il resto. Tuttavia con salvaVideogioco con l'implementazione qui sotto
+    //         creo un nuovo record con GTA 5 / PS4, cosa vietata da me per come ho impostato i vincoli di unique su entità Videogioco
+
        if(videogioco.getNome() != null && videogiocoRepository.existsByNomeIgnoreCaseAndNascosto(videogioco.getNome(), 0))
            throw new VideogiocoGiaEsistenteException();
 
@@ -85,6 +131,8 @@ public class VideogiocoService {
        videogioco.setNascosto(0); //rendo visibile il videogioco, cosa garantita da controlli precedenti
 
        videogiocoRepository.save(videogioco);
+
+*/
 
    }
 
